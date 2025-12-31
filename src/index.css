@@ -1,26 +1,14 @@
 @import "tailwindcss";
 
-/* Custom scrollbar for premium feel */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0f0f11;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #3b82f6, #8b5cf6);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #60a5fa, #a78bfa);
-}
+/* ============================================
+   MOBILE-FIRST BASE STYLES
+   ============================================ */
 
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 /* Selection styling */
@@ -37,7 +25,79 @@ body {
   background: #0f0f11;
   color: #e4e4e7;
   overflow-x: hidden;
+  /* Remove tap highlight on mobile */
+  -webkit-tap-highlight-color: transparent;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior-y: contain;
 }
+
+/* ============================================
+   MOBILE TOUCH OPTIMIZATIONS
+   ============================================ */
+
+/* Better touch scrolling */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent text selection on buttons */
+button,
+a {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* ============================================
+   SAFE AREA SUPPORT (iPhone notch, etc)
+   ============================================ */
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 16px);
+}
+
+/* ============================================
+   SCROLLBAR STYLES
+   ============================================ */
+
+/* Hide scrollbar on mobile for cleaner look */
+@media (max-width: 640px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+/* Custom scrollbar for desktop */
+@media (min-width: 641px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0f0f11;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #60a5fa, #a78bfa);
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
 
 /* Glassmorphism utility */
 .glass {
@@ -55,20 +115,23 @@ body {
   background-clip: text;
 }
 
-/* Glow effect */
+/* Glow effects */
 .glow-blue {
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.3),
-              0 0 40px rgba(59, 130, 246, 0.2),
-              0 0 60px rgba(59, 130, 246, 0.1);
+    0 0 40px rgba(59, 130, 246, 0.2),
+    0 0 60px rgba(59, 130, 246, 0.1);
 }
 
 .glow-purple {
   box-shadow: 0 0 20px rgba(139, 92, 246, 0.3),
-              0 0 40px rgba(139, 92, 246, 0.2),
-              0 0 60px rgba(139, 92, 246, 0.1);
+    0 0 40px rgba(139, 92, 246, 0.2),
+    0 0 60px rgba(139, 92, 246, 0.1);
 }
 
-/* Noise texture overlay */
+/* ============================================
+   NOISE TEXTURE OVERLAY
+   ============================================ */
+
 .noise-overlay::before {
   content: '';
   position: absolute;
@@ -81,15 +144,22 @@ body {
   pointer-events: none;
 }
 
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
 /* Magnetic button animation */
 @keyframes pulse-glow {
-  0%, 100% {
+
+  0%,
+  100% {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.4),
-                0 0 40px rgba(139, 92, 246, 0.2);
+      0 0 40px rgba(139, 92, 246, 0.2);
   }
+
   50% {
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.6),
-                0 0 60px rgba(139, 92, 246, 0.4);
+      0 0 60px rgba(139, 92, 246, 0.4);
   }
 }
 
@@ -99,9 +169,12 @@ body {
 
 /* Floating animation */
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotateY(0deg);
   }
+
   50% {
     transform: translateY(-20px) rotateY(5deg);
   }
@@ -111,10 +184,53 @@ body {
   animation: float 6s ease-in-out infinite;
 }
 
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+
+  .float-animation,
+  .pulse-glow {
+    animation: none;
+  }
+}
+
 /* Grid pattern background */
 .grid-pattern {
-  background-image: 
+  background-image:
     linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
+}
+
+/* ============================================
+   MOBILE-SPECIFIC OVERRIDES
+   ============================================ */
+
+@media (max-width: 640px) {
+
+  /* Smaller grid pattern on mobile */
+  .grid-pattern {
+    background-size: 30px 30px;
+  }
+
+  /* Reduce glow intensity on mobile for performance */
+  .glow-blue {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.25);
+  }
+
+  /* Smaller floating animation on mobile */
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
 }

@@ -26,6 +26,11 @@ import {
   Settings,
 } from 'lucide-react';
 
+// Payment Integration
+import { useMidtrans, PAYMENT_STATUS } from './hooks/useMidtrans';
+import PaymentStatusModal from './components/PaymentStatusModal';
+import CheckoutModal from './components/CheckoutModal';
+
 // Animated Background Component
 const AnimatedBackground = () => (
   <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -656,9 +661,20 @@ const SpecsSection = () => {
   );
 };
 
-// Pricing Section
+// Pricing Section with Midtrans Integration
 const PricingSection = () => {
   const [selectedPlan, setSelectedPlan] = useState('colorful');
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+
+  // Midtrans payment hook
+  const {
+    isLoading,
+    paymentStatus,
+    paymentResult,
+    shouldShowModal,
+    processPayment,
+    resetPayment
+  } = useMidtrans();
 
   const plans = [
     {
@@ -714,6 +730,31 @@ const PricingSection = () => {
       notIncluded: [],
     },
   ];
+
+  // Handle buy button click
+  const handleBuyClick = (planId) => {
+    if (selectedPlan === planId) {
+      setIsCheckoutOpen(true);
+    } else {
+      setSelectedPlan(planId);
+    }
+  };
+
+  // Handle checkout confirmation
+  const handleCheckoutConfirm = async (orderDetails) => {
+    try {
+      await processPayment(orderDetails);
+      setIsCheckoutOpen(false);
+    } catch (error) {
+      console.error('Payment failed:', error);
+      setIsCheckoutOpen(false);
+    }
+  };
+
+  // Handle payment modal close
+  const handlePaymentModalClose = () => {
+    resetPayment();
+  };
 
   return (
     <section id="pricing" className="relative py-32">
@@ -794,6 +835,10 @@ const PricingSection = () => {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBuyClick(plan.id);
+                }}
                 className={`w-full py-4 rounded-xl font-bold transition-all ${selectedPlan === plan.id
                   ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white glow-blue'
                   : 'bg-zinc-800 text-white hover:bg-zinc-700'
@@ -823,6 +868,23 @@ const PricingSection = () => {
           ))}
         </motion.div>
       </div>
+
+      {/* Checkout Modal */}
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        selectedPlan={selectedPlan}
+        onConfirm={handleCheckoutConfirm}
+        isLoading={isLoading}
+      />
+
+      {/* Payment Status Modal */}
+      <PaymentStatusModal
+        isOpen={shouldShowModal}
+        onClose={handlePaymentModalClose}
+        status={paymentStatus}
+        paymentResult={paymentResult}
+      />
     </section>
   );
 };
